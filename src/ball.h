@@ -1,6 +1,7 @@
 #pragma once
 #include <tuple>
 #include "raylib.h"
+#include "utils.h"
 #include <vector>
 
 class Ball {
@@ -19,13 +20,13 @@ class Ball {
         Ball(float startX, float startY, int rad, float speed, float cor, float friction);
 
         // Update
-        void collision(float x1, float x2, float y1, float y2);
-        void update(float x1, float x2, float y1, float y2, float width, float height, float dt);
+        void collision(float x1, float y1, float x2, float y2);
+        void update(const std::vector<Line>& Lines, float width, float height, float dt);
 
         // Draw
         void draw();
 
         // Setters
         float getRadius();
-        std::tuple<float, float> getPos();
+        std::array<float, 2> getPos();
 };

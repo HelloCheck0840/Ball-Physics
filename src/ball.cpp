@@ -1,5 +1,5 @@
 #include "ball.h"
-#include <tuple>
+#include <array>
 #include "raylib.h"
 #include <cmath>
 #include "utils.h"
@@ -17,8 +17,8 @@ Ball::Ball(float startX, float startY, int rad, float speed, float cor, float co
     friction = coefficient;
 }
 
-void Ball::collision(float x1, float x2, float y1, float y2) {
-    auto [nx, ny] = normal(x1, x2, y1, y2);
+void Ball::collision(float x1, float y1, float x2, float y2) {
+    auto [nx, ny] = getNormal(x1, y1, x2, y2);
 
     float distanceAwayFromLine = dotProduct(x - x1, y - y1, nx, ny);
 
@@ -29,17 +29,26 @@ void Ball::collision(float x1, float x2, float y1, float y2) {
     }
 
     if (distanceAwayFromLine < radius) {
+        float overlap = radius - distanceAwayFromLine;
+        x += nx * overlap;
+        y += ny * overlap;
+
         float speedAlongNormal = dotProduct(velX, velY, nx, ny);
-        float speedAlongTanget = dotProduct(velX, velY, ny, -nx);
 
         if (speedAlongNormal <= 0) {
-            velX = -(speedAlongNormal * nx) * restitution + (speedAlongTanget * ny) * (1 - friction);
-            velY = -(speedAlongNormal * ny) * restitution - (speedAlongTanget * nx) * (1 - friction);  
+            float vNormalX = speedAlongNormal * nx;
+            float vNormalY = speedAlongNormal * ny;
+
+            float vTangentX = velX - vNormalX;
+            float vTangentY = velY - vNormalY;
+
+            velX = (vTangentX * (1.0f - friction)) - (vNormalX * restitution);
+            velY = (vTangentY * (1.0f - friction)) - (vNormalY * restitution);
         }
     }
 }
 
-void Ball::update(float x1, float x2, float y1, float y2, float width, float height, float dt) {
+void Ball::update(const std::vector<Line>& Lines, float width, float height, float dt) {
     // Position update
     velY += gravity *  100 * dt; 
     y += velY * dt;
@@ -64,7 +73,10 @@ void Ball::update(float x1, float x2, float y1, float y2, float width, float hei
     }
 
     // Collision Checks
-    Ball::collision(x1, x2, y1, y2);    
+    for (const Line& line : Lines) {
+        Ball::collision(line.pos1[0], line.pos1[1], line.pos2[0], line.pos2[1]);
+    }
+    
 }
 
 // Draw
@@ -77,6 +89,6 @@ float Ball::getRadius() {
     return radius;
 }
 
-std::tuple<float, float> Ball::getPos() {
-    return std::make_tuple(x, y);
+std::array<float, 2> Ball::getPos() {
+    return {x, y};
 }
