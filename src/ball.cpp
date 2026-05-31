@@ -17,10 +17,11 @@ Ball::Ball(float startX, float startY, int rad, float speed, float cor, float co
     friction = coefficient;
 }
 
-void Ball::collision(float x1, float y1, float x2, float y2) {
-    auto [nx, ny] = getNormal(x1, y1, x2, y2);
+void Ball::collision(const Line& line) {
+    float nx = line.normal[0];
+    float ny = line.normal[1];
 
-    float distanceAwayFromLine = dotProduct(x - x1, y - y1, nx, ny);
+    float distanceAwayFromLine = dotProduct(x - line.pos1[0], y - line.pos1[1], nx, ny);
 
     if (distanceAwayFromLine < 0) {
         nx = -nx;
@@ -74,9 +75,8 @@ void Ball::update(const std::vector<Line>& Lines, float width, float height, flo
 
     // Collision Checks
     for (const Line& line : Lines) {
-        Ball::collision(line.pos1[0], line.pos1[1], line.pos2[0], line.pos2[1]);
+        Ball::collision(line);
     }
-    
 }
 
 // Draw

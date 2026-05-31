@@ -6,6 +6,8 @@
 #include <array>
 #include <cmath>
 #include <iostream>
+#include <string>
+#include <unordered_map>
 
 int main() {
     // Initialization
@@ -16,6 +18,10 @@ int main() {
 
     SetTargetFPS(180);
     InitWindow(screenWidth, screenHeight, "Ball Physics Simulation");
+
+    // Game state
+    std::vector<std::string> gameStates = {"Balls", "Lines", "Neutral"};
+    std::string gameState = "Neutral";
 
     // Line stuff
     std::vector<Line> Lines;

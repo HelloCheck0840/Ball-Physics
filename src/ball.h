@@ -20,7 +20,7 @@ class Ball {
         Ball(float startX, float startY, int rad, float speed, float cor, float friction);
 
         // Update
-        void collision(float x1, float y1, float x2, float y2);
+        void collision(const Line& line);
         void update(const std::vector<Line>& Lines, float width, float height, float dt);
 
         // Draw
